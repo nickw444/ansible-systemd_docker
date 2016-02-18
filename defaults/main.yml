@@ -1,0 +1,17 @@
+---
+systemd_services_path: /lib/systemd/system
+service_basename: "{{ service_name.lower() | regex_replace(' ', '-') | regex_replace('[^A-Za-z0-9_\\-\\.]', '') }}"
+service_filename: "{{ service_basename }}.service"
+service_path: "{{ systemd_services_path }}/{{ service_filename }}"
+
+docker_binary: "/usr/bin/docker"
+command:
+privileged: no
+volumes: []
+volumes_from: []
+ports: []
+links: []
+env: {}
+extra_cmd_args: []
+requires_services: []
+after_services: "{{ requires_services }}"

@@ -1,0 +1,39 @@
+[Unit]
+Description={{ service_name }} Docker Container
+Requires=docker.service {% for service in requires_services %}{{ service }} {% endfor %}
+
+After=docker.service {% for service in after_services %}{{ service }} {% endfor %}
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre={{ docker_binary }} pull {{ image }}
+ExecStart={{ docker_binary }} run -i --rm --name "{{ service_basename }}" \
+{% for volume in volumes %}
+    --volume "{{ volume }}" \
+{% endfor %}
+{% for container in volumes_from %}
+    --volumes-from "{{ container }}"\
+{% endfor %}
+{% for link in links %}
+    --link "{{ link }}" \
+{% endfor %}
+{% for port in ports %}
+    -p "{{ port }}" \
+{% endfor %}
+{% for key, value in env.items() %}
+    -e "{{ key }}={{ value }}" \
+{% endfor %}
+{% for arg in extra_cmd_args %}
+    {{ arg }}  \
+{% endfor %}
+{% if privileged %}
+    --privileged \
+{% endif %}
+    "{{ image }}" {% if command %}"{{ command }}"{% endif %}
+
+Restart=always
+RestartSec=10s
+
+
+[Install]
+WantedBy=multi-user.target

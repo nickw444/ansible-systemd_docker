@@ -1,0 +1,14 @@
+---
+- name: Build and install systemd service
+  template: 
+    src: "files/service.j2"
+    dest: "{{ service_path }}"
+
+- name: Reload systemd
+  command: systemctl --system daemon-reload
+
+- name: Enable and start service
+  service:
+    name: "{{ service_basename }}"
+    enabled: yes
+    state: restarted
